@@ -19,6 +19,7 @@ def repository(ctx):
 def add(ctx, repository, project):
 
     primer_dir = pathlib.Path(ctx.obj['confdir'])
+    projects_yml = primer_dir / 'projects.yml'
     with projects_yml.open('r') as yml_file:
         projects_def = yaml.load(yml_file, Loader=Loader)
         projects = projects_def['primer']['projects']
@@ -28,6 +29,7 @@ def add(ctx, repository, project):
     primer_yml = primer_dir / 'projects' / '{}.yml'.format(project)
     with primer_yml.open('r') as yml_file:
         project_def = yaml.load(yml_file, Loader=Loader)
+        project_dir = project_def['primer']['directory']
         repos = project_def['primer']['repositories']
         if repository in repos:
             definition = yaml.dump(repos[repository], default_flow_style=False, Dumper=Dumper)
@@ -38,7 +40,7 @@ def add(ctx, repository, project):
         else:
             repos[repository] = _modify_repository()
 
-            clone_dir = pathlib.Path(project) / repository
+            clone_dir = pathlib.Path(project_dir) / pathlib.Path(repository)
 
             porcelain.clone(repos[repository]['uri'], str(clone_dir))
 
