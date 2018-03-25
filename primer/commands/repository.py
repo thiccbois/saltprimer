@@ -17,7 +17,7 @@ def repository(ctx):
 @click.argument('project')
 @click.pass_context
 def add(ctx, repository, project):
-
+    """This command adds REPOSITORY to a PROJECT"""
     primer_dir = pathlib.Path(ctx.obj['confdir'])
     projects_yml = primer_dir / 'projects.yml'
     with projects_yml.open('r') as yml_file:

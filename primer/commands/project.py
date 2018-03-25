@@ -16,7 +16,9 @@ def project(ctx):
 @click.argument('project')
 @click.pass_context
 def add(ctx, project):
-
+    """
+    This commands adds a project to primer
+    """
     base = ctx.obj['base']
     primer_dir = pathlib.Path(ctx.obj['confdir'])
     primer_project_dir = primer_dir / 'projects'
