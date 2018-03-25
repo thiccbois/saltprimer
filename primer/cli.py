@@ -1,24 +1,21 @@
 import click
 import pathlib
-import yaml
-import os
-from dulwich import porcelain
+from primer.commands.project import project
+from primer.commands.repository import repository
+
+default_primer_dir = str(pathlib.Path.home() / '.primer')
 
 @click.group()
-def cli():
-    pass
+@click.option('--confdir', default=default_primer_dir)
+@click.pass_context
+def cli(ctx, confdir):
+    ctx.obj['confdir'] = confdir
 
-@cli.command()
-@click.argument('project')
-def init(project):
-    pathlib.Path(project).mkdir(parents=True, exist_ok=True)
-    repo = porcelain.init(project)
-    header = {'version': 1, 'primer':{'repos': []}}
-    primer_yml = os.path.join(project, 'primer.yml')
-    with open(primer_yml, 'w') as yml_file:
-        yaml.dump(header, yml_file, default_flow_style=False)
-    porcelain.add(repo, primer_yml)
-    return porcelain.commit(repo, message="initial commit")
+cli.add_command(project)
+cli.add_command(repository)
+
+def run():
+    cli(obj={})
 
 if __name__ == '__main__':
-    cli()
+    run()
