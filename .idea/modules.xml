@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/primer.iml" filepath="$PROJECT_DIR$/.idea/primer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/saltprimer.iml" filepath="$PROJECT_DIR$/.idea/saltprimer.iml" />
     </modules>
   </component>
 </project>
