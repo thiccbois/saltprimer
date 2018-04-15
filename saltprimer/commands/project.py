@@ -1,6 +1,8 @@
-import click
-import sys
 import pathlib
+import sys
+
+import click
+
 import saltprimer.exceptions as exceptions
 from saltprimer.models.project import Project
 
@@ -9,6 +11,7 @@ from saltprimer.models.project import Project
 @click.pass_context
 def project(ctx):
     pass
+
 
 @project.command()
 @click.argument('project')

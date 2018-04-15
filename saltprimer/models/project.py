@@ -1,21 +1,20 @@
 import pathlib
-import yaml
-from saltprimer.saltyaml import Loader, Dumper
-from dulwich import porcelain
 from collections import OrderedDict
+
+import yaml
+from dulwich import porcelain
 from dulwich.repo import Repo
+
 import saltprimer.exceptions as exceptions
+from saltprimer.saltyaml import Loader, Dumper
+
 
 class Project(object):
-
 
     def __init__(self, confdir, base, name):
         self.base = base
         self.name = name
         self.confdir = confdir
-
-
-
 
     def save(self):
 
