@@ -2,15 +2,17 @@ import click
 import pathlib
 import sys
 import yaml
-from saltprimer.yaml import Loader, Dumper
+from saltprimer.saltyyaml import Loader, Dumper
 from dulwich import porcelain
 from collections import OrderedDict
 from dulwich.repo import Repo
+
 
 @click.group()
 @click.pass_context
 def project(ctx):
     pass
+
 
 @project.command()
 @click.argument('project')

@@ -2,7 +2,7 @@ import click
 import pathlib
 import sys
 import yaml
-from saltprimer.yaml import Loader, Dumper
+from saltprimer.saltyyaml import Loader, Dumper
 from dulwich import porcelain
 from collections import OrderedDict
 
