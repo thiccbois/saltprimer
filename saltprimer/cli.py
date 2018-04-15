@@ -1,7 +1,7 @@
 import click
 import pathlib
-from primer.commands.project import project
-from primer.commands.repository import repository
+from saltprimer.commands.project import project
+from saltprimer.commands.repository import repository
 
 default_primer_dir = str(pathlib.Path.home() / '.primer')
 default_base_dir = str(pathlib.Path.cwd())
