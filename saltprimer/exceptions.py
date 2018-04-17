@@ -10,3 +10,15 @@ class ProjectFolderExistsError(Exception):
 
     def __init__(self, message):
         self.message = message
+
+
+class NoProjectsError(Exception):
+    """Exception for already existing project folder"""
+
+    pass
+
+
+class ProjectNotFoundError(Exception):
+    """Exception for already existing project folder"""
+
+    pass

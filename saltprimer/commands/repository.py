@@ -1,10 +1,20 @@
-import click
 import pathlib
+from collections import OrderedDict
+
+import click
 import sys
 import yaml
-from saltprimer.saltyaml import Loader, Dumper
 from dulwich import porcelain
-from collections import OrderedDict
+
+import saltprimer.exceptions as exceptions
+from saltprimer.models import Project
+from saltprimer.saltyaml import Dumper
+
+
+def _modify_repository():
+    uri = click.prompt('Please enter a valid git uri', type=str)
+    branch = click.prompt('Please enter an existing branch name', default='master', type=str)
+    return (uri, branch)
 
 
 @click.group()
@@ -12,48 +22,38 @@ from collections import OrderedDict
 def repository(ctx):
     pass
 
+
 @repository.command()
 @click.argument('repository')
 @click.argument('project')
 @click.pass_context
 def add(ctx, repository, project):
     """This command adds REPOSITORY to a PROJECT"""
-    primer_dir = pathlib.Path(ctx.obj['confdir'])
-    projects_yml = primer_dir / 'projects.yml'
-    with projects_yml.open('r') as yml_file:
-        projects_def = yaml.load(yml_file, Loader=Loader)
-        projects = projects_def['primer']['projects']
-    if not project in projects:
-        click.echo(click.style("Project {} has not been initialized!".format(project), fg='red'), err=True)
+    confdir = ctx.obj['confdir']
+    project_path = pathlib.Path(project)
+    project_path = project_path.expanduser()
+    name = project_path.name
+    try:
+        project = Project.objects(confdir, name)[0]
+    except exceptions.NoProjectsError:
+        click.echo(click.style("Primer has not been initialized!", fg='red'), err=True)
         sys.exit(1)
-    primer_yml = primer_dir / 'projects' / '{}.yml'.format(project)
-    with primer_yml.open('r') as yml_file:
-        project_def = yaml.load(yml_file, Loader=Loader)
-        project_dir = project_def['primer']['directory']
-        repos = project_def['primer']['repositories']
-        if repository in repos:
-            definition = yaml.dump(repos[repository], default_flow_style=False, Dumper=Dumper)
-            if click.confirm(click.style(
-                    '{} already in {}, do you want to continue?\n{}'.format(repository, project, definition),
-                    fg='yellow')):
-                repos[repository] = _modify_repository()
-        else:
-            repos[repository] = _modify_repository()
-
-            clone_dir = pathlib.Path(project_dir) / pathlib.Path(repository)
-
-            porcelain.clone(repos[repository]['uri'], str(clone_dir))
-
-    with primer_yml.open('w') as yml_file:
-        yaml.dump(project_def, yml_file, default_flow_style=False, Dumper=Dumper)
-
-
-
-
-def _modify_repository():
-    uri = click.prompt('Please enter a valid git uri', type=str)
-    branch = click.prompt('Please enter an existing branch name', default='master', type=str)
+    except exceptions.ProjectNotFoundError:
+        click.echo(click.style("Project {} doesn't exist!".format(project.name), fg='red'), err=True)
+        sys.exit(1)
+    repositories = project.repositories
+    if repository in repositories:
+        definition = yaml.dump(repositories[repository], default_flow_style=False, Dumper=Dumper)
+        if not click.confirm(click.style(
+                '{} already in {}, do you want to continue?\n{}'.format(repository, project.name, definition),
+                fg='yellow')):
+            sys.exit(0)
+    uri, branch = _modify_repository()
     output = OrderedDict()
     output['uri'] = uri
     output['branch'] = branch
-    return output
+    repositories[repository] = output
+    project.save()
+    clone_dir = pathlib.Path(project.project_dir) / repository
+    clone_dir.parent.mkdir(parents=True, exist_ok=True)
+    porcelain.clone(uri, str(clone_dir))

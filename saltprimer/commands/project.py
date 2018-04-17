@@ -2,10 +2,11 @@ import pathlib
 import sys
 
 import click
+import yaml
 
 import saltprimer.exceptions as exceptions
-from saltprimer.models.project import Project
-
+from saltprimer.models import Project
+from saltprimer.saltyaml import Dumper
 
 @click.group()
 @click.pass_context
@@ -22,10 +23,9 @@ def add(ctx, project):
     """
     confdir = ctx.obj['confdir']
     project_path = pathlib.Path(project)
-    project_path = project_path.expanduser()
+    project_path = project_path.expanduser().resolve()
     base = project_path.parent
     name = project_path.name
-
     salt_project = Project(confdir, base, name)
     try:
         salt_project.save()
@@ -38,4 +38,31 @@ def add(ctx, project):
 
     except exceptions.ProjectExistsError:
         click.echo(click.style("Project {} already defined!".format(name), fg='red'), err=True)
+        sys.exit(1)
+
+
+@project.command()
+@click.pass_context
+def list(ctx):
+    confdir = ctx.obj['confdir']
+    try:
+        output = []
+        projects = Project.objects(confdir)
+        for project in projects:
+            output.append(str(project.project_dir))
+        click.echo("{} projects found:\n  {}".format(len(projects), '\n  '.join(output)))
+    except exceptions.NoProjectsError:
+        click.echo(click.style("Primer has not been initialized!".format(name), fg='red'), err=True)
+        sys.exit(1)
+
+@project.command()
+@click.argument('project')
+@click.pass_context
+def show(ctx, project):
+    confdir = ctx.obj['confdir']
+    try:
+        output = Project.objects(confdir, project)[0]
+        click.echo(yaml.dump(output.as_dict(), default_flow_style=False, Dumper=Dumper))
+    except exceptions.NoProjectsError:
+        click.echo(click.style("Primer has not been initialized!".format(name), fg='red'), err=True)
         sys.exit(1)
