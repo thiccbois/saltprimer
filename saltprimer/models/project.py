@@ -33,8 +33,11 @@ class Project(object):
                     with primer_yml.open('r') as yml_file:
                         project_def = yaml.load(yml_file, Loader=Loader)
                         directory = project_def['primer']['directory']
-                        repositories = project_def['primer']['directory']
-                        item = cls(confdir, directory, project, repositories)
+                        project_path = pathlib.Path(directory)
+                        project_path = project_path.expanduser()
+                        base = str(project_path.parent)
+                        repositories = project_def['primer']['repositories']
+                        item = cls(confdir, base, project, repositories)
                     items.append(item)
             return items
         else:

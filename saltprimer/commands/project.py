@@ -48,7 +48,7 @@ def list(ctx):
         output = []
         projects = Project.objects(confdir)
         for project in projects:
-            output.append(project.name)
+            output.append(str(project.project_dir))
         click.echo("{} projects found:\n  {}".format(len(projects), '\n  '.join(output)))
     except exceptions.NoProjectsError:
         click.echo(click.style("Primer has not been initialized!".format(name), fg='red'), err=True)

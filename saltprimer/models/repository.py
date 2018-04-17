@@ -1,12 +1,14 @@
 import pathlib
 import sys
-import yaml
-from saltprimer.saltyaml import Loader, Dumper
-from dulwich import porcelain
 from collections import OrderedDict
 
-class Repository(object):
+import yaml
+from dulwich import porcelain
 
+from saltprimer.saltyaml import Loader, Dumper
+
+
+class Repository(object):
 
     def __init__(self, confdir, name):
         self.name = name
@@ -40,8 +42,6 @@ class Repository(object):
 
     with primer_yml.open('w') as yml_file:
         yaml.dump(project_def, yml_file, default_flow_style=False, Dumper=Dumper)
-
-
 
 
 def _modify_repository():
