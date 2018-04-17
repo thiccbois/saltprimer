@@ -23,7 +23,7 @@ def add(ctx, project):
     """
     confdir = ctx.obj['confdir']
     project_path = pathlib.Path(project)
-    project_path = project_path.expanduser()
+    project_path = project_path.expanduser().resolve()
     base = project_path.parent
     name = project_path.name
     salt_project = Project(confdir, base, name)
