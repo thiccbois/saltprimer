@@ -2,10 +2,11 @@ import pathlib
 import sys
 
 import click
+import yaml
 
 import saltprimer.exceptions as exceptions
 from saltprimer.models import Project
-
+from saltprimer.saltyaml import Dumper
 
 @click.group()
 @click.pass_context
@@ -50,6 +51,18 @@ def list(ctx):
         for project in projects:
             output.append(str(project.project_dir))
         click.echo("{} projects found:\n  {}".format(len(projects), '\n  '.join(output)))
+    except exceptions.NoProjectsError:
+        click.echo(click.style("Primer has not been initialized!".format(name), fg='red'), err=True)
+        sys.exit(1)
+
+@project.command()
+@click.argument('project')
+@click.pass_context
+def show(ctx, project):
+    confdir = ctx.obj['confdir']
+    try:
+        output = Project.objects(confdir, project)[0]
+        click.echo(yaml.dump(output.as_dict(), default_flow_style=False, Dumper=Dumper))
     except exceptions.NoProjectsError:
         click.echo(click.style("Primer has not been initialized!".format(name), fg='red'), err=True)
         sys.exit(1)
