@@ -25,7 +25,6 @@ def add(ctx, project):
     project_path = project_path.expanduser()
     base = project_path.parent
     name = project_path.name
-
     salt_project = Project(confdir, base, name)
     try:
         salt_project.save()
@@ -38,4 +37,19 @@ def add(ctx, project):
 
     except exceptions.ProjectExistsError:
         click.echo(click.style("Project {} already defined!".format(name), fg='red'), err=True)
+        sys.exit(1)
+
+
+@project.command()
+@click.pass_context
+def list(ctx):
+    confdir = ctx.obj['confdir']
+    try:
+        output = []
+        projects = Project.objects(confdir)
+        for project in projects:
+            output.append(project.name)
+        click.echo("{} projects found:\n  {}".format(len(projects), '\n  '.join(output)))
+    except exceptions.NoProjectsError:
+        click.echo(click.style("Primer has not been initialized!".format(name), fg='red'), err=True)
         sys.exit(1)
