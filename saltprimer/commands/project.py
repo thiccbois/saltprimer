@@ -4,7 +4,7 @@ import sys
 import click
 
 import saltprimer.exceptions as exceptions
-from saltprimer.models.project import Project
+from saltprimer.models import Project
 
 
 @click.group()
