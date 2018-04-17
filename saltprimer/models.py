@@ -56,7 +56,7 @@ class Project(object):
 
         primer_dir = pathlib.Path(self.confdir)
         primer_project_dir = primer_dir / 'projects'
-        project_dir = pathlib.Path(self.name)
+        project_dir = pathlib.Path(self.project_dir)
         project = self.name
         message = "modified {}".format(self.name)
         if not primer_project_dir.exists():
