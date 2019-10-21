@@ -1,5 +1,5 @@
 certifi==2018.1.18
 click==6.7
 dulwich==0.19.0
-urllib3==1.22
+urllib3==1.24.2
 
